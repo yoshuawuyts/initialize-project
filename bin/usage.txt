@@ -1,0 +1,11 @@
+Usage: initialize-project [options]
+
+Options:
+  -h, --help        Output usage information
+  -v, --version     Output version number
+
+Examples:
+  $ initialize-project   # Create a fresh project
+
+Docs: https://github.com/yoshuawuyts/initialize-project
+Bugs: https://github.com/yoshuawuyts/initialize-project/issues

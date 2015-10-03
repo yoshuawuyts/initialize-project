@@ -1,0 +1,58 @@
+{
+  "name": "initialize-project",
+  "version": "1.0.0",
+  "description": "Create a fresh project",
+  "main": "index.js",
+  "scripts": {
+    "deps": "dependency-check . && dependency-check . --extra --no-dev",
+    "test": "standard && npm run deps && NODE_ENV=test node test",
+    "test:cov": "standard && npm run deps && NODE_ENV=test istanbul cover test.js"
+  },
+  "repository": "yoshuawuyts/initialize-project",
+  "keywords": [
+    "intitialize",
+    "generate",
+    "project",
+    "unix",
+    "clean",
+    "minimal",
+    "boilerplate",
+    "fast",
+    "iterate",
+    "demo",
+    "spin up",
+    "code generation"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "JSONStream": "^1.0.6",
+    "base-package-json": "^1.0.2",
+    "cliclopts": "^1.1.1",
+    "copy-template-dir": "^1.0.3",
+    "dates-of-today": "^1.0.0",
+    "git-init": "^1.0.0",
+    "inquirer": "^0.10.1",
+    "map-limit": "0.0.1",
+    "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "pump": "^1.0.0",
+    "rc": "^1.1.2",
+    "xtend": "^4.0.0"
+  },
+  "devDependencies": {
+    "concat-stream": "^1.5.0",
+    "dependency-check": "^2.5.1",
+    "istanbul": "^0.3.21",
+    "readdirp": "^2.0.0",
+    "rimraf": "^2.4.3",
+    "tape": "^4.2.0",
+    "uuid": "^2.0.1"
+  },
+  "files": [
+    "index.js",
+    "bin/*"
+  ],
+  "bin": {
+    "initialize-project": "./bin/cli.js"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "{{name}}",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "clean": "rm-modules",
+    "deps": "dependency-check . && dependency-check . --extra --no-dev",
+    "dev": "linklocal link -r && linklocal list -r | bulk -c 'npm install --production'",
+    "prepublish": "if [[ $NODE_ENV != production ]]; then npm run dev; fi",
+    "start": "node .",
+    "start:watch": "NODE_ENV=development nodemon -i 'node_modules/' -i 'client*' -i 'component*' -- ./index.js | garnish",
+    "test": "standard && npm run deps && NODE_ENV=test node test",
+    "test:cov": "standard && npm run deps && NODE_ENV=test istanbul cover test.js",
+    "watch": "npm run start:watch"
+  },
+  "dependencies": {
+    "app-main": "file:app-main"
+  },
+  "devDependencies": {
+  }
+}
