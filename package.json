@@ -51,7 +51,8 @@
   },
   "files": [
     "index.js",
-    "bin/*"
+    "bin/*",
+    "templates/**"
   ],
   "bin": {
     "initialize-project": "./bin/cli.js"
