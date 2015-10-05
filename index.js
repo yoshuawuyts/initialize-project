@@ -1,4 +1,3 @@
-const pkgJson = require('base-package-json')
 const exec = require('child_process').exec
 const copy = require('copy-template-dir')
 const prompt = require('inquirer').prompt
@@ -6,12 +5,9 @@ const today = require('dates-of-today')
 const assign = require('xtend/mutable')
 const mapLimit = require('map-limit')
 const gitInit = require('git-init')
-const json = require('JSONStream')
 const mkdirp = require('mkdirp')
 const path = require('path')
-const pump = require('pump')
 const rc = require('rc')
-const fs = require('fs')
 
 module.exports = initializeProject
 
@@ -22,7 +18,7 @@ function initializeProject (argv, cb) {
   argv.devDependencies = [ 'bulk', 'dependency-check', 'garnish', 'istanbul',
     'linklocal', 'nodemon', 'npm-check-updates', 'standard', 'tape' ]
 
-  const tasks = [ runPrompt, getUser, chdir, copyFiles, createPkg, createGit,
+  const tasks = [ runPrompt, getUser, chdir, copyFiles, createGit,
     installDevDependencies ]
   mapLimit(tasks, 1, iterator, cb)
   function iterator (fn, next) {
@@ -81,16 +77,6 @@ function chdir (argv, cb) {
 function copyFiles (argv, cb) {
   const inDir = path.join(__dirname, 'templates')
   copy(inDir, process.cwd(), argv, cb)
-}
-
-// create a new package.json
-// (obj, fn) -> null
-function createPkg (argv, cb) {
-  const name = argv.name
-  const rs = pkgJson({ private: true, name: name })
-  const ts = json.stringify()
-  const ws = fs.createWriteStream(path.join(process.cwd(), 'package.json'))
-  pump(rs, ts, ws, cb)
 }
 
 // create git repository
