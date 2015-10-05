@@ -113,8 +113,7 @@ function installDevDependencies (argv, cb) {
 
     function iterator (dep, done) {
       process.stdout.write('pkg: ' + dep + '\n')
-      const cliArgs = ['npm i'].concat(args, dep)
-      // console.log('cliargs', cliArgs)
+      const cliArgs = ['npm i'].concat(args, dep).join(' ')
       exec(cliArgs, function (err) {
         if (err) return done(err)
         done()

@@ -5,7 +5,6 @@ const mkdirp = require('mkdirp')
 const rimraf = require('rimraf')
 const path = require('path')
 const test = require('tape')
-const uuid = require('uuid')
 
 test('should create files', function (t) {
   t.plan(12)
@@ -13,7 +12,7 @@ test('should create files', function (t) {
   mkdirp('tmp', function (err, res) {
     t.error(err, 'no err')
 
-    const route = path.join(process.cwd(), 'tmp', uuid.v1().slice(0, 6))
+    const route = path.join(process.cwd(), 'tmp')
     const cmd = path.join(__dirname, 'bin/cli.js')
     const name = 'test'
     const ps = spawn(cmd, [ '-d', route, '-n', name ])
