@@ -1,4 +1,4 @@
-const exec = require('child_process').exec
+const install = require('npm-install-package')
 const copy = require('copy-template-dir')
 const prompt = require('inquirer').prompt
 const today = require('dates-of-today')
@@ -18,8 +18,7 @@ function initializeProject (argv, cb) {
   argv.devDependencies = [ 'bulk', 'dependency-check', 'garnish', 'istanbul',
     'linklocal', 'nodemon', 'npm-check-updates', 'standard', 'tape' ]
 
-  const tasks = [ runPrompt, getUser, chdir, copyFiles, createGit,
-    installDevDependencies ]
+  const tasks = [ runPrompt, getUser, chdir, copyFiles, createGit, devDeps ]
   mapLimit(tasks, 1, iterator, cb)
   function iterator (fn, next) {
     fn(argv, next)
@@ -32,10 +31,7 @@ function runPrompt (argv, cb) {
   // values exist, no need to prompt
   if (argv.name) return cb()
 
-  const questions = [
-    { name: 'name', default: '', message: 'Project name' }
-  ]
-
+  const questions = [ { name: 'name', default: '', message: 'Project name' } ]
   prompt(questions, function (res) {
     assign(argv, res)
     cb()
@@ -52,19 +48,19 @@ function getUser (argv, cb) {
 
   const github = conf['init.author.github']
   if (!github) return cb('no init.author.github set')
+  argv.user = github
 
   const name = conf['init.author.name']
   if (!name) return cb('no init.author.name set')
-
-  argv.user = github
   argv.realName = name
+
   cb()
 }
 
 // change the output directory
 // (obj, fn) -> null
 function chdir (argv, cb) {
-  const dir = argv.directory
+  const dir = path.join(argv.directory, argv.name)
   mkdirp(dir, function (err) {
     if (err) return cb(err)
     process.chdir(dir)
@@ -88,22 +84,7 @@ function createGit (argv, next) {
 
 // install dev dependencies from npm, pull from cache by default
 // (obj, cb) -> null
-function installDevDependencies (argv, cb) {
-  const opts = [ '-D', '--cache-min', 'Infinity' ]
-  installDeps(argv.devDependencies, opts, argv, cb)
-
-  // install dependencies
-  // ([str], [str], obj, fn) -> null
-  function installDeps (deps, args, argv, cb) {
-    mapLimit(deps, Infinity, iterator, cb)
-
-    function iterator (dep, done) {
-      process.stdout.write('pkg: ' + dep + '\n')
-      const cliArgs = ['npm i'].concat(args, dep).join(' ')
-      exec(cliArgs, function (err) {
-        if (err) return done(err)
-        done()
-      })
-    }
-  }
+function devDeps (argv, cb) {
+  const opts = { saveDev: true, cache: true }
+  install(argv.devDependencies, opts, cb)
 }

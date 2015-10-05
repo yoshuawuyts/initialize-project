@@ -22,7 +22,7 @@ test('should create files', function (t) {
     ps.stdout.on('end', verify)
 
     function verify () {
-      const opts = { root: route, directoryFilter: '!node_modules' }
+      const opts = { root: path.join(route, name) }
       readdirp(opts).pipe(concat({ object: true }, concatFn))
 
       function concatFn (arr) {
@@ -39,7 +39,7 @@ test('should create files', function (t) {
         t.notEqual(arr.indexOf('app-main/index.js'), -1, 'am/index.js exists')
         t.notEqual(arr.indexOf('app-main/package.json'), -1, 'am/package.json exists')
 
-        rimraf(path.join(process.cwd(), 'tmp'), function (err) {
+        rimraf(route, function (err) {
           t.error(err, 'no err')
         })
       }
