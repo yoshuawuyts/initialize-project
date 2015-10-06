@@ -15,10 +15,20 @@ module.exports = initializeProject
 // (obj, fn) -> null
 function initializeProject (argv, cb) {
   argv.date = today()
-  argv.devDependencies = [ 'bulk', 'dependency-check', 'garnish', 'istanbul',
-    'linklocal', 'nodemon', 'npm-check-updates', 'standard', 'tape' ]
+  argv.devDeps = [ 'bulk', 'dependency-check', 'garnish', 'istanbul',
+    'linklocal', 'nodemon', 'standard', 'tape' ]
+  argv.mainDeps = [ 'bole-stream', 'http-ndjson', 'server-summary',
+    'JSONStream' ]
 
-  const tasks = [ runPrompt, getUser, chdir, copyFiles, createGit, devDeps ]
+  const tasks = [
+    runPrompt,
+    getUser,
+    chdir,
+    copyFiles,
+    createGit,
+    devDeps,
+    mainDeps
+  ]
   mapLimit(tasks, 1, iterator, cb)
   function iterator (fn, next) {
     fn(argv, next)
@@ -28,10 +38,12 @@ function initializeProject (argv, cb) {
 // query user for values
 // (obj, fn) -> null
 function runPrompt (argv, cb) {
-  // values exist, no need to prompt
-  if (argv.name) return cb()
+  const questions = []
+  if (!argv.name) {
+    questions.push({ name: 'name', default: '', message: 'Project name' })
+  }
 
-  const questions = [ { name: 'name', default: '', message: 'Project name' } ]
+  if (!questions.length) return cb()
   prompt(questions, function (res) {
     assign(argv, res)
     cb()
@@ -84,7 +96,22 @@ function createGit (argv, next) {
 
 // install dev dependencies from npm, pull from cache by default
 // (obj, cb) -> null
-function devDeps (argv, cb) {
+function devDeps (argv, next) {
   const opts = { saveDev: true, cache: true }
-  install(argv.devDependencies, opts, cb)
+  install(argv.devDeps, opts, function (err) {
+    if (err) return next(err)
+    next()
+  })
+}
+
+// install dependencies from npm for app-main
+// (obj, cb) -> null
+function mainDeps (argv, next) {
+  process.chdir(path.join(process.cwd(), 'app-main'))
+  const opts = { save: true, cache: true }
+  install(argv.mainDeps, opts, function (err) {
+    if (err) return next(err)
+    process.chdir(path.join(process.cwd(), '..'))
+    next()
+  })
 }

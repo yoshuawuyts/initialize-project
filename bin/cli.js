@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const cliclopts = require('cliclopts')
 const minimist = require('minimist')
+const util = require('util')
 const fs = require('fs')
 
 const pkg = require('../package.json')
@@ -39,7 +40,14 @@ if (argv.version) {
 } else if (argv.help) {
   process.stdout.write(pkg.name + ' - ' + pkg.description + '\n')
   usage(0)
-} else main(argv)
+} else {
+  main(argv, function (err) {
+    if (err) {
+      process.stderr.write(util.format(err))
+      process.stderr.write('\n')
+    }
+  })
+}
 
 // print usage & exit
 // num? -> null
