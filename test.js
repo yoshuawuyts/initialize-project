@@ -35,16 +35,14 @@ test('should create files', function (t) {
     function sink (arr) {
       t.ok(Array.isArray(arr), 'is array')
 
+      const files = [ '.gitignore', '.travis.yml', 'LICENSE', 'README.md',
+        'index.js', 'package.json', 'test.js', 'app-main/index.js',
+        'app-main/package.json' ]
+
       arr = arr.map(function (obj) { return obj.path })
-      t.notEqual(arr.indexOf('.gitignore'), -1, '.gitignore exists')
-      t.notEqual(arr.indexOf('.travis.yml'), -1, '.travis.yml exists')
-      t.notEqual(arr.indexOf('LICENSE'), -1, 'LICENSE exists')
-      t.notEqual(arr.indexOf('README.md'), -1, 'README.md exists')
-      t.notEqual(arr.indexOf('index.js'), -1, 'index.js exists')
-      t.notEqual(arr.indexOf('package.json'), -1, 'package.json exists')
-      t.notEqual(arr.indexOf('test.js'), -1, 'test.js exists')
-      t.notEqual(arr.indexOf('app-main/index.js'), -1, 'am/index.js exists')
-      t.notEqual(arr.indexOf('app-main/package.json'), -1, 'am/package.json exists')
+      files.forEach(function verifyExists (name) {
+        t.notEqual(arr.indexOf(name), -1, name + ' exists')
+      })
 
       next()
     }
