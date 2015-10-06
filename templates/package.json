@@ -6,7 +6,7 @@
     "clean": "rm-modules",
     "deps": "dependency-check . && dependency-check . --extra --no-dev",
     "dev": "linklocal link -r && linklocal list -r | bulk -c 'npm install --production'",
-    "prepublish": "if [[ $NODE_ENV != production ]]; then npm run dev; fi",
+    "prepublish": "if [ \"$NODE_ENV\" != \"production\" ]; then npm run dev; fi",
     "start": "node .",
     "start:watch": "NODE_ENV=development nodemon -i 'node_modules/' -i 'client*' -i 'component*' -- ./index.js | garnish",
     "test": "standard && npm run deps && NODE_ENV=test node test",
