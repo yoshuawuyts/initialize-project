@@ -1,6 +1,6 @@
 {
   "name": "initialize-project",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Create a fresh project",
   "main": "index.js",
   "scripts": {
