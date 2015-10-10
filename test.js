@@ -14,6 +14,7 @@ test('should create files', function (t) {
 
   const route = path.join(process.cwd(), 'tmp')
   const cmd = path.join(__dirname, 'bin/cli.js')
+  const description = 'foobar'
   const name = 'test'
 
   const fns = [ runInit, verifyFiles, verifyPkg, clean ]
@@ -22,7 +23,7 @@ test('should create files', function (t) {
   })
 
   function runInit (next) {
-    const ps = spawn(cmd, [ '-d', route, '-n', name ])
+    const ps = spawn(cmd, [ '-d', route, '-n', name, '-D', description ])
     ps.stdout.pipe(process.stdout) // uncomment in case of bugs
     ps.stderr.pipe(process.stderr)
     ps.stdout.on('end', next)

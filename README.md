@@ -14,10 +14,11 @@ $ npm install initialize-project
 Usage: initialize-project [options]
 
 Options:
-  -h, --help        Output usage information
-  -v, --version     Output version number
-  -d, --directory   Set output directory
-  -n, --name        Set project name
+  -h, --help          Output usage information
+  -v, --version       Output version number
+  -d, --directory     Set output directory
+  -n, --name          Set project name
+  -D, --description   Set description
 
 Examples:
   $ initialize-project   # Create a fresh project

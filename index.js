@@ -15,10 +15,22 @@ module.exports = initializeProject
 // (obj, fn) -> null
 function initializeProject (argv, cb) {
   argv.date = today()
-  argv.devDeps = [ 'bulk', 'dependency-check', 'garnish', 'istanbul',
-    'linklocal', 'nodemon', 'standard', 'tape' ]
-  argv.mainDeps = [ 'bole-stream', 'http-ndjson', 'server-summary',
-    'JSONStream' ]
+  argv.devDeps = [
+    'bulk',
+    'dependency-check',
+    'garnish',
+    'istanbul',
+    'linklocal',
+    'nodemon',
+    'standard',
+    'tape'
+  ]
+  argv.mainDeps = [
+    'bole-stream',
+    'http-ndjson',
+    'server-summary',
+    'JSONStream'
+  ]
 
   const tasks = [
     runPrompt,
@@ -41,6 +53,14 @@ function runPrompt (argv, cb) {
   const questions = []
   if (!argv.name) {
     questions.push({ name: 'name', default: '', message: 'Project name' })
+  }
+
+  if (!argv.description) {
+    questions.push({
+      name: 'description',
+      default: '',
+      message: 'Project description'
+    })
   }
 
   if (!questions.length) return cb()

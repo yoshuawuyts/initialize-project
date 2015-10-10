@@ -24,6 +24,11 @@ const opts = cliclopts([
     default: process.cwd()
   },
   {
+    name: 'description',
+    abbr: 'D',
+    default: ''
+  },
+  {
     name: 'name',
     abbr: 'n',
     default: ''
