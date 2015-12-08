@@ -29,7 +29,9 @@ function initializeProject (argv, cb) {
     'bole-stream',
     'http-ndjson',
     'server-summary',
-    'JSONStream'
+    'JSONStream',
+    'size-stream',
+    'pumpify'
   ]
 
   const tasks = [
