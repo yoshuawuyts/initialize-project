@@ -15,12 +15,14 @@ function createServer (argv) {
   const port = argv.port
 
   // create server
-  const server = http.createServer((req, res) => {
+  const server = http.createServer(function (req, res) {
     const httpLogger = httpNdjson(req, res)
     httpLogger.pipe(logStream, { end: false })
 
     const size = sizeStream()
-    size.once('size', size => httpLogger.setContentLength(size))
+    size.once('size', function (size) {
+      httpLogger.setContentLength(size)
+    })
 
     const sink = pumpify(size, res)
     sink.end('hello world')
