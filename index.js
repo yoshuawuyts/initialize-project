@@ -26,12 +26,14 @@ function initializeProject (argv, cb) {
     'tape'
   ]
   argv.mainDeps = [
-    'bole-stream',
-    'http-ndjson',
-    'server-summary',
     'JSONStream',
-    'size-stream',
-    'pumpify'
+    'bole-stream',
+    'from2-string',
+    'http-ndjson',
+    'pumpify',
+    'server-router',
+    'server-summary',
+    'size-stream'
   ]
 
   const tasks = [
@@ -129,11 +131,9 @@ function devDeps (argv, next) {
 // install dependencies from npm for app-main
 // (obj, cb) -> null
 function mainDeps (argv, next) {
-  process.chdir(path.join(process.cwd(), 'app-main'))
   const opts = { save: true, cache: true }
   install(argv.mainDeps, opts, function (err) {
     if (err) return next(err)
-    process.chdir(path.join(process.cwd(), '..'))
     next()
   })
 }

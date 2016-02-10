@@ -1,3 +1,5 @@
+const serverRouter = require('server-router')
+const fromString = require('from2-string')
 const boleStream = require('bole-stream')
 const httpNdjson = require('http-ndjson')
 const sizeStream = require('size-stream')
@@ -14,6 +16,9 @@ function createServer (argv) {
   const logStream = boleStream({ level: argv.logLevel })
   const port = argv.port
 
+  const router = serverRouter()
+  registerRoutes(router)
+
   // create server
   const server = http.createServer(function (req, res) {
     const httpLogger = httpNdjson(req, res)
@@ -25,9 +30,18 @@ function createServer (argv) {
     })
 
     const sink = pumpify(size, res)
-    sink.end('hello world')
+    const rs = router(req, res)
+    rs.pipe(sink)
   })
 
   // start the server on port
   server.listen(port, summary(server))
+}
+
+// register routes on the router
+// obj -> null
+function registerRoutes (router) {
+  router.on('/', function (req, res) {
+    return fromString('hello world')
+  })
 }

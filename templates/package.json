@@ -14,7 +14,6 @@
     "watch": "npm run start:watch"
   },
   "dependencies": {
-    "app-main": "file:app-main"
   },
   "devDependencies": {
   }

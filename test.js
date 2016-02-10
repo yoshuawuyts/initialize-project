@@ -10,7 +10,7 @@ const test = require('tape')
 const fs = require('fs')
 
 test('should create files', function (t) {
-  t.plan(16)
+  t.plan(15)
 
   const route = path.join(process.cwd(), 'tmp')
   const cmd = path.join(__dirname, 'bin/cli.js')
@@ -37,8 +37,7 @@ test('should create files', function (t) {
       t.ok(Array.isArray(arr), 'is array')
 
       const files = [ '.gitignore', '.travis.yml', 'LICENSE', 'README.md',
-        'index.js', 'package.json', 'test.js', 'app-main/index.js',
-        'app-main/package.json' ]
+        'index.js', 'package.json', 'test.js', 'app-server.js' ]
 
       arr = arr.map(function (obj) { return obj.path })
       files.forEach(function verifyExists (name) {
@@ -50,7 +49,7 @@ test('should create files', function (t) {
   }
 
   function verifyPkg (next) {
-    const loc = path.join(route, name, 'app-main', 'package.json')
+    const loc = path.join(route, name, 'package.json')
     const rs = fs.createReadStream(loc)
     const ws = concat(sink)
 
