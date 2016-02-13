@@ -1,5 +1,3 @@
-const serverRouter = require('server-router')
-const fromString = require('from2-string')
 const boleStream = require('bole-stream')
 const httpNdjson = require('http-ndjson')
 const sizeStream = require('size-stream')
@@ -9,6 +7,8 @@ const pumpify = require('pumpify')
 const bole = require('bole')
 const http = require('http')
 
+const createApi = require('./app-api')
+
 module.exports = createServer
 
 function createServer (argv) {
@@ -16,8 +16,7 @@ function createServer (argv) {
   const logStream = boleStream({ level: argv.logLevel })
   const port = argv.port
 
-  const router = serverRouter()
-  registerRoutes(router)
+  const router = createApi(router)
 
   // create server
   const server = http.createServer(function (req, res) {
@@ -36,12 +35,4 @@ function createServer (argv) {
 
   // start the server on port
   server.listen(port, summary(server))
-}
-
-// register routes on the router
-// obj -> null
-function registerRoutes (router) {
-  router.on('/', function (req, res) {
-    return fromString('hello world')
-  })
 }

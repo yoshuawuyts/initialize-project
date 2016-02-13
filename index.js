@@ -30,6 +30,7 @@ function initializeProject (argv, cb) {
     'bankai',
     'bole-stream',
     'browserify',
+    'css-wipe',
     'from2-string',
     'http-ndjson',
     'hyperx',
@@ -39,6 +40,7 @@ function initializeProject (argv, cb) {
     'server-summary',
     'sheet-router',
     'sheetify',
+    'sheetify-cssnext',
     'size-stream',
     'virtual-app',
     'virtual-dom'
