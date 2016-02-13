@@ -27,13 +27,21 @@ function initializeProject (argv, cb) {
   ]
   argv.mainDeps = [
     'JSONStream',
+    'bankai',
     'bole-stream',
+    'browserify',
     'from2-string',
     'http-ndjson',
+    'hyperx',
+    'hyperxify',
     'pumpify',
     'server-router',
     'server-summary',
-    'size-stream'
+    'sheet-router',
+    'sheetify',
+    'size-stream',
+    'virtual-app',
+    'virtual-dom'
   ]
 
   const tasks = [
