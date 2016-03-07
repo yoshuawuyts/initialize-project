@@ -26,22 +26,19 @@ function initializeProject (argv, cb) {
     'tape'
   ]
   argv.mainDeps = [
-    'JSONStream',
     'bankai',
-    'bole-stream',
+    'bole',
     'browserify',
     'css-wipe',
-    'from2-string',
     'http-ndjson',
-    'hyperx',
     'hyperxify',
-    'pumpify',
+    'pull-http',
+    'pull-stream',
     'server-router',
     'server-summary',
     'sheet-router',
     'sheetify',
     'sheetify-cssnext',
-    'size-stream',
     'virtual-app',
     'virtual-dom'
   ]
