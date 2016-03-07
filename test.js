@@ -1,23 +1,20 @@
 const spawn = require('child_process').spawn
-const parse = require('safe-json-parse')
 const concat = require('concat-stream')
 const mapLimit = require('map-limit')
 const readdirp = require('readdirp')
 const rimraf = require('rimraf')
-const pump = require('pump')
 const path = require('path')
 const test = require('tape')
-const fs = require('fs')
 
 test('should create files', function (t) {
-  t.plan(18)
+  t.plan(11)
 
   const route = path.join(process.cwd(), 'tmp')
   const cmd = path.join(__dirname, 'bin/cli.js')
   const description = 'foobar'
   const name = 'test'
 
-  const fns = [ runInit, verifyFiles, verifyPkg, clean ]
+  const fns = [ runInit, verifyFiles, clean ]
   mapLimit(fns, 1, function (fn, cb) { fn(cb) }, function (err) {
     t.error(err)
   })
@@ -37,8 +34,8 @@ test('should create files', function (t) {
       t.ok(Array.isArray(arr), 'is array')
 
       const files = [ '.gitignore', '.travis.yml', 'LICENSE', 'README.md',
-        'index.js', 'package.json', 'test.js', 'app-main.js', 'app-api.js',
-        'client-main.js', 'client-layout.js' ]
+        'index.js', 'package.json', 'test/index.js', 'client.js',
+        'layouts/main.js' ]
 
       arr = arr.map(function (obj) { return obj.path })
       files.forEach(function verifyExists (name) {
@@ -46,27 +43,6 @@ test('should create files', function (t) {
       })
 
       next()
-    }
-  }
-
-  function verifyPkg (next) {
-    const loc = path.join(route, name, 'package.json')
-    const rs = fs.createReadStream(loc)
-    const ws = concat(sink)
-
-    pump(rs, ws, function (err) {
-      t.error(err, 'no error')
-    })
-
-    function sink (buf) {
-      const str = String(buf)
-      parse(str, function (err, obj) {
-        t.error(err)
-        t.ok(obj.dependencies['bole-stream'], 'bole-stream exists')
-        t.ok(obj.dependencies['http-ndjson'], 'http-ndjson')
-        t.ok(obj.dependencies['server-summary'], 'server-summary')
-        t.ok(obj.dependencies['JSONStream'], 'JSONStream')
-      })
     }
   }
 

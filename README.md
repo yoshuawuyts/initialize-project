@@ -8,12 +8,13 @@ minimal unidirectional client.
 ## Features
 - __comprehensive logging:__ [size-stream][12], [garnish][13],
   [server-summary][14], [stdout-stream][15], [bole][16]
-- __streams everywhere:__ [server-router][17]
+- __streams everywhere:__ [server-router][17], [pull-stream][29],
+  [pull-http][30]
 - __dynamic asset serving:__ [bankai][18]
 - __functional client logic:__ [virtual-app][19], [xtend][20],
   [virtual-dom][21], [sheet-router][22]
 - __inline assets:__ [hyperx][23], [hyperxify][24], [sheetify][25]
-- __clean styles:__ [css-wipe][26], [css-type-base][27], [sheetify-cssnext][28]
+- __clean styles:__ [css-wipe][26], [sheetify-cssnext][28]
 
 ## Installation
 ```sh
@@ -70,3 +71,5 @@ Bugs: https://github.com/yoshuawuyts/initialize-project/issues
 [26]: https://github.com/sheetify/css-wipe
 [27]: https://github.com/sheetify/css-type-base
 [28]: https://github.com/sheetify/sheetify-cssnext
+[29]: https://github.com/dominictarr/pull-stream
+[30]: https://github.com/yoshuawuyts/pull-http
