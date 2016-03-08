@@ -1,3 +1,45 @@
 #!/bin/sh
 
-npm run watch
+dirname=$(dirname "$(readlink -f "$0")")
+nodemon="$dirname/../node_modules/.bin/nodemon"
+garnish="$dirname/../node_modules/.bin/garnish"
+entry_path="$dirname/../index.js"
+
+usage () {
+  printf 'usage: script/start [watch|production]'
+}
+
+start_production () {
+  node "$entry_path"
+}
+
+start_watch () {
+  NODE_ENV=development "$nodemon" \
+    -i 'node_modules/' \
+    -i 'client.js' \
+    -i 'elements/' \
+    -i 'layouts/' \
+    -- "$entry_path" | "$garnish"
+}
+
+# set CLI flags
+getopt -T > /dev/null
+if [ "$?" -eq 4 ]; then args="$(getopt --long help --options h -- "$*")"
+else args="$(getopt h "$*")"; fi
+[ ! $? -eq 0 ] && { usage && exit 2; }
+eval set -- "$args"
+
+# parse CLI flags
+while true; do
+  case "$1" in
+    -h|--help) usage && exit 1 ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+done
+
+case "$1" in
+  w|watch) start_watch ;;
+  p|production) start_production ;;
+  *) start_watch ;;
+esac

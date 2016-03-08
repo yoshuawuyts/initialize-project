@@ -1,0 +1,37 @@
+#!/bin/sh
+
+dirname=$(dirname "$(readlink -f "$0")")
+discify="$dirname/../node_modules/.bin/discify"
+browserify="$dirname/../node_modules/.bin/browserify"
+client_path="$dirname/../client.js"
+
+usage () {
+  printf 'usage: script/test [bundle]'
+}
+
+bundle_size () {
+  "$browserify" --full-paths "$client_path" | "$discify" --open
+}
+
+# set CLI flags
+getopt -T > /dev/null
+if [ "$?" -eq 4 ]; then args="$(getopt --long help --options h -- "$*")"
+else args="$(getopt h "$*")"; fi
+[ ! $? -eq 0 ] && { usage && exit 2; }
+eval set -- "$args"
+
+# parse CLI flags
+while true; do
+  case "$1" in
+    -h|--help) usage && exit 1 ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+done
+
+# assert argv count
+[ "$#" -lt 1 ] && { usage && exit 1; }
+
+case "$1" in
+  b|bundle) bundle_size
+esac
