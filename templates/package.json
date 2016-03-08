@@ -13,6 +13,25 @@
     "test:cov": "standard && npm run deps && NODE_ENV=test istanbul cover test.js",
     "watch": "npm run start:watch"
   },
+  "browserify": {
+    "transform": [
+      [
+        "sheetify/transform",
+        {
+          "use": [
+            [
+              "sheetify-cssnext",
+              {
+                "sourcemap": false
+              }
+            ]
+          ]
+        }
+      ],
+      "hyperxify",
+      "brfs"
+    ]
+  },
   "dependencies": {
   },
   "devDependencies": {

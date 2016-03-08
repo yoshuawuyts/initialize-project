@@ -28,6 +28,7 @@ function initializeProject (argv, cb) {
   argv.mainDeps = [
     'bankai',
     'bole',
+    'brfs',
     'browserify',
     'css-wipe',
     'http-ndjson',
