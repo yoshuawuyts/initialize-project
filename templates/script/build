@@ -1,4 +1,4 @@
 #!/bin/sh
 
 mkdir dist/
-tar -czf dist/app.tgz ../www-torrent-display
+tar -czf dist/app.tgz ../{{name}}

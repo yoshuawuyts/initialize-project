@@ -14,7 +14,9 @@ start_production () {
 }
 
 start_watch () {
-  NODE_ENV=development "$nodemon" \
+  LOG_LEVEL=debug \
+  NODE_ENV=development \
+  "$nodemon" \
     -i 'node_modules/' \
     -i 'client.js' \
     -i 'elements/' \

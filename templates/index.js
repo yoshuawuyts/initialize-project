@@ -1,35 +1,74 @@
+const errorStream = require('http-error-stream')
 const serverRouter = require('server-router')
-const summary = require('server-summary')
-const browserify = require('browserify')
-const logHttp = require('http-ndjson')
-const pullHttp = require('pull-http')
-const pull = require('pull-stream')
-const bankai = require('bankai')
-const bole = require('bole')
+const createError = require('server-error')
+const serverSink = require('server-sink')
+const stdout = require('stdout-stream')
+const assert = require('assert')
+const Config = require('envobj')
 const http = require('http')
-const path = require('path')
+const Log = require('bole')
 
-const clientp = path.join(__dirname, 'client.js')
-const log = bole('main')
+const log = Log('main')
+const error = createError(log)
 
-createServer({ port: 1337, logLevel: 'debug' })
+module.exports = main
 
-function createServer (argv) {
-  bole.output({ level: argv.logLevel, stream: process.stdout })
-  const router = createRouter()
-  const server = http.createServer(function (req, res) {
-    const setSize = logHttp(req, res, log.debug)
-    const source = pullHttp.createSource(req, res)
-    const through = router(req, res, setSize)
-    const sink = pullHttp.createSink(req, res, setSize)
-    pull(source, through, sink)
+if (!module.parent) {
+  const config = Config({
+    API_PORT: 1337,
+    LOG_LEVEL: 'info',
+    NODE_ENV: 'production'
   })
-  server.listen(argv.port, summary(server))
+
+  main(config)
 }
 
-function createRouter () {
+function main (config) {
+  assert.equal(typeof config, 'object', 'config should be an object')
+  assert.ok(config.LOG_LEVEL, 'config.LOG_LEVEL should exist')
+
+  Log.output({ level: config.LOG_LEVEL, stream: stdout })
+  logEnv(config, log.info)
+
+  const router = createRouter(config)
+  const apiService = createServer(config, router)
+
+  // return services
+  return {
+    api: apiService
+  }
+}
+
+function createServer (config, router) {
+  assert.equal(typeof config, 'object', 'config should be an object')
+  assert.ok(config.API_PORT, 'config.API_PORT should exist')
+  assert.ok(config.LOG_LEVEL, 'config.LOG_LEVEL should exist')
+
+  const server = http.createServer(function (req, res) {
+    const sink = serverSink(req, res, log.info)
+    router(req, res).pipe(sink)
+  }).listen(config.API_PORT)
+
+  const msg = { message: { type: 'http', port: config.API_PORT } }
+  server.on('listening', log.info.bind(log, msg))
+  return server
+}
+
+function createRouter (config, routers) {
   const router = serverRouter('/404')
-  router.on('/', pullHttp.intercept(bankai.html({ css: false })))
-  router.on('/bundle.js', pullHttp.intercept(bankai.js(browserify, clientp)))
+  router.on('/404', createNotfoundHandler())
   return router
+}
+
+function createNotfoundHandler () {
+  return function (req, res) {
+    return errorStream(req, res, error.client({
+      statusCode: 404,
+      message: 'Path not found'
+    }))
+  }
+}
+
+function logEnv (env, log) {
+  log({ message: env })
 }

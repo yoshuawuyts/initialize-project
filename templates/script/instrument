@@ -1,0 +1,72 @@
+#!/bin/sh
+
+dirname=$(dirname "$(readlink -f "$0")")
+client_path="$(readlink -f "$dirname/../client.js")"
+server_path="$(readlink -f "$dirname/../index")"
+
+browserify="$dirname/../node_modules/.bin/browserify"
+discify="$dirname/../node_modules/.bin/discify"
+npm_check="$dirname/../node_modules/.bin/npm-check"
+zerox="$dirname/../node_modules/.bin/0x"
+why_node="$dirname/../node_modules/.bin/why-is-node-running"
+
+usage () {
+cat << USAGE
+script/instrument - inspect code
+  Commands:
+    b, bundle         Output browserify bundle size
+    d, dependencies   Validate Node dependencies
+    f, flamegraph     Profile the Node server
+    w, why            Run why-is-node-running
+USAGE
+}
+
+run_why () {
+  node --expose-internals "$why_node" .
+}
+
+bundle_size () {
+  "$browserify" --full-paths "$client_path" | "$discify" --open
+}
+
+# if we don't skip unused, dev deps / CSS are caught incorrectly
+npm () {
+  "$npm_check" --skip-unused "$@"
+}
+
+profile () {
+  mkdir -p "dist"
+  outdir="$(mktemp -d dist/profile-XXXXXX)"
+
+  sudo "$zerox" -l "$server_path"
+  sudo mv profile-*/* "$outdir"
+  sudo rm -rf profile-*
+  "$zerox" -c gen "$outdir"/stacks*.out > "$outdir/flame_graph.html"
+  printf '\n[script/instrument flamegraph] created %s\n' "$outdir"
+  open "$outdir/flame_graph.html"
+  rm -rf .__browserify*
+  rm -rf isolate-*
+}
+
+# set CLI flags
+getopt -T > /dev/null
+if [ "$?" -eq 4 ]; then args="$(getopt --long help --options h -- "$*")"
+else args="$(getopt h "$*")"; fi
+[ ! $? -eq 0 ] && { usage && exit 2; }
+eval set -- "$args"
+
+# parse CLI flags
+while true; do
+  case "$1" in
+    -h|--help) usage && exit 1 ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+done
+
+case "$1" in
+  b|bundle) shift; bundle_size "$@" ;;
+  d|deps|dependencies) shift; npm "$@" ;;
+  f|flame|flamegraph) shift; profile "$@" ;;
+  w|why|why-is-node-running) run_why ;;
+esac

@@ -1,16 +1,70 @@
 #!/bin/sh
 
 dirname=$(dirname "$(readlink -f "$0")")
-discify="$dirname/../node_modules/.bin/discify"
-browserify="$dirname/../node_modules/.bin/browserify"
-client_path="$dirname/../client.js"
+
+garnish="$dirname/../node_modules/.bin/garnish"
+dependency_check="$dirname/../node_modules/.bin/dependency-check"
+nyc="$dirname/../node_modules/.bin/nyc"
+standard="$dirname/../node_modules/.bin/standard"
+tap="$dirname/../node_modules/.bin/tap"
+npm_shrinkwrap="$dirname/../node_modules/.bin/npm-shrinkwrap"
 
 usage () {
-  printf 'usage: script/test [bundle]'
+cat << USAGE
+script/test - run testing facilities
+
+  Usage: script/test <cmd> [flags]
+
+  Options:
+   -h, --help   Output usage information
+
+  Commands:
+    <none>             Run full test suite
+    d, dependencies    Validate dependencies
+    c, coverage        Report test coverage
+    s, shrinkwrap      Validate npm shrinkwrapping consistency
+    *                  Run test with <name>
+
+  Examples:
+    script/test bundle   # output browserify bundle size
+    script/test          # run full test suite
+    script/test server   # run test/server.js
+USAGE
 }
 
-bundle_size () {
-  "$browserify" --full-paths "$client_path" | "$discify" --open
+run_test_suite () {
+  if [ "$1" ]; then
+    testfile="test/$1.js"
+    [ -f "$testfile" ] || { printf "Could not find %s\n" "$testfile"; exit 1; }
+
+    set -e
+    "$standard" "$testfile"
+    node "$testfile" | "$garnish"
+    set +e
+  else
+    set -e
+    "$standard" "$dirname/../*.js" "$dirname/../*/*.js"
+    check_deps
+    [ ! "$NODE_ENV" ] && export NODE_ENV='test'
+    "$nyc" "$tap" 'test/*'
+    set +e
+  fi
+}
+shrinkwrap_check () {
+  "$npm_shrinkwrap"
+}
+check_deps () {
+  "$dependency_check" . --entry 'client.js'
+  "$dependency_check" . --entry 'client.js' --extra --no-dev \
+    -i brfs \
+    -i css-wipe \
+    -i insert-css \
+    -i tachyons \
+    -i sheetify-cssnext
+}
+
+report_coverage () {
+  "$nyc" report --reporter=text-lcov
 }
 
 # set CLI flags
@@ -29,9 +83,9 @@ while true; do
   esac
 done
 
-# assert argv count
-[ "$#" -lt 1 ] && { usage && exit 1; }
-
 case "$1" in
-  b|bundle) bundle_size
+  d|deps|dependencies) shift; check_deps "$@" ;;
+  c|cov|coverage) shift; report_coverage "$@" ;;
+  s|shrink|shrinkwrap) shift; shrinkwrap_check ;;
+  *) run_test_suite "$@" ;;
 esac
